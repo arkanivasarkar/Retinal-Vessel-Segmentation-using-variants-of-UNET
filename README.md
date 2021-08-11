@@ -80,4 +80,4 @@ The trained models are present in `/Trained models` folder.
 
 
 
-<h3><strong> This project is done during Indian Academy of Sciences Summer Reasearch Fellowship 2021 </strong></h3>
+<h3><strong> This project is done during Indian Academy of Sciences Summer Reasearch Fellowship 21 </strong></h3>
