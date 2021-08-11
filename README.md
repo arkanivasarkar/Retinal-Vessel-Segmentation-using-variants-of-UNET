@@ -72,7 +72,10 @@ The trained models are present in `/Trained models` folder.
 
 [6] Jin, Qiangguo & Meng, Zhaopeng & Pham, Tuan & Chen, Qi & Wei, Leyi & Su, Ran. (2018). DUNet: A deformable network for retinal vessel segmentation.
 
-
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
 
 
 
