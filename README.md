@@ -1,5 +1,6 @@
 # Retinal-Vessel-Segmentation-using-Variants-of-UNET
 
+![alt text](https://i.ibb.co/BKr7cVF/Picture1.png)
 
 
 This repository contains the implementation of fully convolutional neural networks for segmenting retinal vasculature from fundus images.
@@ -80,4 +81,4 @@ The trained models are present in `/Trained models` folder.
 
 
 
-<h3><strong> This project is done during Indian Academy of Sciences Summer Reasearch Fellowship 21 </strong></h3>
+<h3><strong> This project is done during Indian Academy of Sciences Summer Reasearch Fellowship '21 </strong></h3>
