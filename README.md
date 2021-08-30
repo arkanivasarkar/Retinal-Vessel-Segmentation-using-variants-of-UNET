@@ -57,7 +57,7 @@ The datasets of the fundus images can be acquired from:
 2. [DRIVE](http://www.isi.uu.nl/Research/Databases/DRIVE/)
 3. [STARE](https://cecas.clemson.edu/~ahoover/stare/)
 
-The trained models are present in `/Trained models` folder.
+The trained models are present in `Trained models` folder.
 
 
 
