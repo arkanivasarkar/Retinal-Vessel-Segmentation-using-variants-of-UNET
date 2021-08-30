@@ -1,9 +1,9 @@
 # Retinal-Vessel-Segmentation-using-Variants-of-UNET
 
-![alt text](https://i.ibb.co/BKr7cVF/Picture1.png) ![alt text](https://i.ibb.co/W07sGYv/Picture3.png)
-
-
 This repository contains the implementation of fully convolutional neural networks for segmenting retinal vasculature from fundus images.
+
+![alt text](https://i.ibb.co/BKr7cVF/Picture1.png) 
+
 
 Four architecures/models were made keeping U-NET architecture as the base.
 The models used are:
@@ -46,6 +46,8 @@ The following table compares the performance of various models
 | STARE        | Res-UNET         | 0.893               |0.737        |
 | STARE        | Attention U-NET  | 0.893               |0.738        |
 | STARE        | RA-UNET          | 0.891               |0.733        |
+
+![alt text](https://i.ibb.co/W07sGYv/Picture3.png)
 
 
 
