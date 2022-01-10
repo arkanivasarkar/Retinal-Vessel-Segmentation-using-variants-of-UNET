@@ -14,17 +14,18 @@ def clahe_equalized(imgs):
     imgs_equalized = clahe.apply(imgs)
     return imgs_equalized
 
-
-path1 = '/content/drive/MyDrive/training/images' #training images directory
-path2 = '/content/drive/MyDrive/training/masks' #training masks directory
+path1 = 'M:\Regine Rausch/05 Data/05 Segmentation Network/healthy'              #training images directory path
+path2 = 'M:\Regine Rausch/05 Data/05 Segmentation Network/healthy_manualsegm'   #training images directory path
+# path1 = '/content/drive/MyDrive/training/images' #training images directory
+# path2 = '/content/drive/MyDrive/training/masks' #training masks directory
 
 image_dataset = []
-mask_dataset = [] 
+mask_dataset = []
 
 patch_size = 512
 
-images = sorted(os.listdir(path1)) 
-for i, image_name in enumerate(images):  
+images = sorted(os.listdir(path1))
+for i, image_name in enumerate(images):
    if image_name.endswith(".jpg"):                   
        image = skimage.io.imread(path1+"/"+image_name)  #Read image
        image = image[:,:,1] #selecting green channel
@@ -44,20 +45,21 @@ for i, image_name in enumerate(images):
 
 masks = sorted(os.listdir(path2))  
 for i, mask_name in enumerate(masks):  
-    if mask_name.endswith(".jpg"):                  
-        mask = skimage.io.imread(path2+"/"+mask_name)   #Read masks
-        SIZE_X = (mask.shape[1]//patch_size)*patch_size #getting size multiple of patch size
-        SIZE_Y = (mask.shape[0]//patch_size)*patch_size #getting size multiple of patch size
-        mask = Image.fromarray(mask)        
-        mask = mask.resize((SIZE_X, SIZE_Y))  #resize image
-        mask = np.array(mask)
-        patches_mask = patchify(mask, (patch_size, patch_size), step=patch_size)  #create patches(patch_sizexpatch_sizex1)
-            
-        for i in range(patches_mask.shape[0]):
-            for j in range(patches_mask.shape[1]):                            
-                single_patch_mask = patches_mask[i,j,:,:]
-                single_patch_mask = (single_patch_mask.astype('float32'))/255. 
-                mask_dataset.append(single_patch_mask) 
+    # if mask_name.endswith(".jpg"):
+    #     mask = skimage.io.imread(path2+"/"+mask_name)   #Read masks
+    mask = skimage.io.imread(path2 + '/' + mask_name, plugin='pil')
+    SIZE_X = (mask.shape[1]//patch_size)*patch_size #getting size multiple of patch size
+    SIZE_Y = (mask.shape[0]//patch_size)*patch_size #getting size multiple of patch size
+    mask = Image.fromarray(mask)
+    mask = mask.resize((SIZE_X, SIZE_Y))  #resize image
+    mask = np.array(mask)
+    patches_mask = patchify(mask, (patch_size, patch_size), step=patch_size)  #create patches(patch_sizexpatch_sizex1)
+
+    for i in range(patches_mask.shape[0]):
+        for j in range(patches_mask.shape[1]):
+            single_patch_mask = patches_mask[i,j,:,:]
+            single_patch_mask = (single_patch_mask.astype('float32'))/255.
+            mask_dataset.append(single_patch_mask)
  
 image_dataset = np.array(image_dataset)
 mask_dataset =  np.array(mask_dataset)
@@ -66,7 +68,7 @@ mask_dataset =  np.expand_dims(mask_dataset,axis=-1)
 
 
 #importing models
-from model import unetmodel, residualunet, attentionunet, attention_residualunet
+from model import unetmodel, residualunet, attentionunet, residual_attentionunet
 from tensorflow.keras.optimizers import Adam
 from evaluation_metrics import IoU_coef,IoU_loss
 
@@ -75,15 +77,14 @@ IMG_WIDTH = patch_size
 IMG_CHANNELS = 1
 input_shape = (IMG_HEIGHT, IMG_WIDTH, IMG_CHANNELS)
 
-model = unetmodel(input_shape)
-model.compile(optimizer = Adam(lr = 1e-3), loss= IoU_loss, metrics= ['accuracy', IoU_coef])
-
+# model = unetmodel(input_shape)
+# model.compile(optimizer = Adam(lr = 1e-3), loss= IoU_loss, metrics= ['accuracy', IoU_coef])
 #model = residualunet(input_shape)
 #model.compile(optimizer = Adam(lr = 1e-3), loss= IoU_loss, metrics= ['accuracy', IoU_coef])
-#model = attentionunet(input_shape)
-#model.compile(optimizer = Adam(lr = 1e-3), loss= IoU_loss, metrics= ['accuracy', IoU_coef])
-#model = attention_residualunet(input_shape)
-#model.compile(optimizer = Adam(lr = 1e-3), loss= IoU_loss, metrics= ['accuracy', IoU_coef])
+model = attentionunet(input_shape)
+model.compile(optimizer = Adam(learning_rate = 1e-3), loss= IoU_loss, metrics= ['accuracy', IoU_coef])
+# model = residual_attentionunet(input_shape)
+# model.compile(optimizer = Adam(lr = 1e-3), loss= IoU_loss, metrics= ['accuracy', IoU_coef])
 
 
 #splitting data into 70-30 ratio to validate training performance

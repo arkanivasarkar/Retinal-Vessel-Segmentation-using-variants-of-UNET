@@ -15,7 +15,7 @@ def clahe_equalized(imgs):
 patch_size = 512
 
 #loading model architectures
-from model import unetmodel, residualunet, attentionunet, attention_residualunet
+from model import unetmodel, residualunet, attentionunet, residual_attentionunet
 from tensorflow.keras.optimizers import Adam
 from evaluation_metrics import IoU_coef,IoU_loss
 
@@ -25,13 +25,19 @@ IMG_CHANNELS = 1
 
 input_shape = (IMG_HEIGHT, IMG_WIDTH, IMG_CHANNELS)
 
-model = unetmodel(input_shape) #/residualunet(input_shape)/attentionunet(input_shape)/attention_residualunet(input_shape) 
-model.compile(optimizer = Adam(lr = 1e-3), loss= IoU_loss, metrics= ['accuracy', IoU_coef])
-model.load_weights('/content/drive/MyDrive/training/retina_Unet_150epochs.hdf5') #loading weights
+model = attentionunet(input_shape) #/residualunet(input_shape)/unetmodel(input_shape)/attention_residualunet(input_shape)
+model.compile(optimizer = Adam(learning_rate = 1e-3), loss= IoU_loss, metrics= ['accuracy', IoU_coef])
+model.load_weights('M:\Regine Rausch/05 Data/05 Segmentation Network\Retinal-Vessel-Segmentation-using-variants-of-UNET'
+                   '\Trained models/retina_attentionUnet_150epochs.hdf5') #loading weights
+#model.load_weights('/content/drive/MyDrive/training/retina_Unet_150epochs.hdf5') #loading weights
 
 
-path1 = '/content/drive/MyDrive/training/images'    #test dataset images directory path
-path2 = '/content/drive/MyDrive/training/masks'     #test dataset mask directory path
+# path1 = '/content/drive/MyDrive/training/images'    #test dataset images directory path
+# path2 = '/content/drive/MyDrive/training/masks'     #test dataset mask directory path
+
+path1 = 'M:\Regine Rausch/05 Data/05 Segmentation Network/healthy'              #test images directory path
+path2 = 'M:\Regine Rausch/05 Data/05 Segmentation Network/healthy_manualsegm'   #label images directory path
+#path2 = 'M:\Regine Rausch/05 Data/05 Segmentation Network/healthy_fovmask'      #test mask directory path
 
 
 from sklearn.metrics import jaccard_score,confusion_matrix
@@ -74,7 +80,7 @@ for idx, image_name in enumerate(testimages):
       prediction.append(reconstructed_image) 
 
       groundtruth=[]
-      groundtruth = skimage.io.imread(path2+'/'+testmasks[idx]) #reading mask of the test img      
+      groundtruth = skimage.io.imread(path2+'/'+testmasks[idx], plugin='pil') #reading mask of the test img
       SIZE_X = (groundtruth.shape[1]//patch_size)*patch_size 
       SIZE_Y = (groundtruth.shape[0]//patch_size)*patch_size  
       groundtruth = cv2.resize(groundtruth, (SIZE_X, SIZE_Y))  
@@ -83,7 +89,9 @@ for idx, image_name in enumerate(testimages):
       y_true = groundtruth
       y_pred = reconstructed_image
       labels = [0, 1]
-      IoU = []
+      IoU = []  #Intersection over Union -> Schwellenwert, um zu ermitteln, ob ein vorhergesagtes Ergebnis ein
+                #True Positive oder ein False Positive ist
+
       for label in labels:
           jaccard = jaccard_score(y_pred.flatten(),y_true.flatten(), pos_label=label, average='weighted')
           IoU.append(jaccard)
@@ -94,6 +102,7 @@ for idx, image_name in enumerate(testimages):
       accuracy = []
       cm = confusion_matrix(y_true.flatten(),y_pred.flatten(), labels=[0, 1])
       accuracy = (cm[0,0]+cm[1,1])/(cm[0,0]+cm[0,1]+cm[1,0]+cm[1,1]) #accuracy of single image
+        #cm[0,0]: true negatives, c[1,1]: true positives, c[1,0]: false negatives, c[0,1]: false positives
       global_accuracy.append(accuracy)
 
 
@@ -109,17 +118,17 @@ import random
 test_img_number = random.randint(0, len(testimg))
 plt.figure(figsize=(20, 18))
 plt.subplot(231)
-plt.title('Test Image')
+plt.title('Test Image', fontsize = 25)
 plt.xticks([])
 plt.yticks([])
 plt.imshow(testimg[test_img_number])
 plt.subplot(232)
-plt.title('Ground Truth')
+plt.title('Ground Truth', fontsize = 25)
 plt.xticks([])
 plt.yticks([])
 plt.imshow(ground_truth[test_img_number],cmap='gray')
 plt.subplot(233)
-plt.title('Prediction')
+plt.title('Prediction', fontsize = 25)
 plt.xticks([])
 plt.yticks([])
 plt.imshow(prediction[test_img_number],cmap='gray')
@@ -131,7 +140,8 @@ plt.show()
 #prediction on single image
 from datetime import datetime 
 reconstructed_image = []
-test_img = skimage.io.imread('/content/drive/MyDrive/hrf/images/15_dr.jpg') #test image
+#test_img = skimage.io.imread('/content/drive/MyDrive/hrf/images/15_dr.jpg') #test image
+test_img = skimage.io.imread('M:\Regine Rausch/05 Data/05 Segmentation Network\healthy/01_h.jpg') #test image
 
 predicted_patches = []
 start = datetime.now()   
